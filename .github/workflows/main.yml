@@ -43,6 +43,7 @@ jobs:
           path: build/usbotghs
       - name: Proving usbotghs
         run: |
+          ls -l;
           cd build/usbotghs;
           . ../../setenv.sh;
           FRAMAC_TARGET=y make frama-c;
