@@ -7,7 +7,7 @@ jobs:
       image: ${{ matrix.release }}
     strategy:
       matrix:
-        release: ["framac/frama-c:21.1", "framac/frama-c:22" ] 
+        release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
     timeout-minutes: 600
     steps:
       - name: checkout libstd
