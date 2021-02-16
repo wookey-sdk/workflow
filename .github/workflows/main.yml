@@ -97,6 +97,7 @@ jobs:
           path: build/usbotghs
       - name: Proving libusbctrl
         run: |
+          opam init
           opam depext --install -y --verbose alt-ergo.2.3.3 why3.1.3.3 z3.4.8.6
           why3 config --detect;
           . ~/.opam/opam-init/init.sh
