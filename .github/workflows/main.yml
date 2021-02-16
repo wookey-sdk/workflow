@@ -6,6 +6,7 @@ jobs:
     container:
       image: ${{ matrix.release }}
     strategy:
+      fail-fast: false
       matrix:
         release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
     timeout-minutes: 600
