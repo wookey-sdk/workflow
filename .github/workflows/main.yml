@@ -45,7 +45,8 @@ jobs:
         run: |
           ls -l;
           cd build/usbotghs;
-          . ../../setenv.sh;
+          curl -o setenv.sh https://raw.githubusercontent.com/wookey-sdk/workflow/master/setenv.sh
+          . setenv.sh;
           FRAMAC_TARGET=y make frama-c;
       - name: Proving usbctrl
         run: |
