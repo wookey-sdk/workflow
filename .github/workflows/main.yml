@@ -43,6 +43,7 @@ jobs:
           path: build/usbotghs
       - name: Proving usbotghs
         run: |
+          why3 config --detect;
           cd build/usbotghs;
           . ../workflow/setenv.usbotghs.sh;
           FRAMAC_TARGET=y make frama-c;
@@ -96,6 +97,7 @@ jobs:
           path: build/usbotghs
       - name: Proving libusbctrl
         run: |
+          why3 config --detect;
           cd build/libusbctrl;
           . ../workflow/setenv.libusbctrl.sh;
           FRAMAC_TARGET=y make frama-c;
