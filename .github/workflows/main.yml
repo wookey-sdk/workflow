@@ -2,8 +2,15 @@ on: push
 
 jobs:
   framac22:
-    runs-on: framac/fama-c:22.0
+    runs-on: ubuntu-latest
     steps:
+      - name: FramaC
+        run: |
+          apt install opam why3;
+          opam install depext;
+          opam depext frama-c;
+          opam install frama-c;
+          why3 config --detect
       - name: checkout libstd
         uses: actions/checkout@v2
         with:
