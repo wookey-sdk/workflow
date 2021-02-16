@@ -6,10 +6,7 @@ jobs:
     container:
       image: ${{ matrix.release }}
       volumes:
-        - /home/runner:/home/runner
-    env:
-      HOME: /home/runner
-      PWD: /home/runner
+        - /home/runner:/__w/workflow/workflow
     strategy:
       fail-fast: false
       matrix:
