@@ -43,6 +43,9 @@ jobs:
           path: build/usbotghs
       - name: Proving usbotghs
         run: |
+          cat /etc/os-release
+          cat /etc/apt/sources.list
+          apt update -y
           apt install why3 libz3
           wh3 config --detect
           cd build/usbotghs;
