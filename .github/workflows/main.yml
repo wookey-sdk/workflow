@@ -1,22 +1,96 @@
 on: push
 
 jobs:
-  framac-latest:
-    runs-on: ubuntu-latest
+  framac-22:
+    container:
+      image: framac/frama-c:22.0
     steps:
       - name: checkout libstd
         uses: actions/checkout@v2
         with:
           repository: wookey-sdk/libstd
-          ref: master
+          ref: incoming
           token: ${{ secrets.FRAMAC_SECRET }} 
           path: libstd
-      - name: Install FramaC
-        run: |
-          sudo apt install opam why3;
-          opam init;
-          opam install depext;
-          opam depext frama-c;
-          opam install frama-c;
-          test -r /home/runner/.opam/opam-init/init.sh && . /home/runner/.opam/opam-init/init.sh;
-          why3 config --detect
+      - name: checkout libdfu
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libdfu
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: libdfu
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: libusbctrl
+      - name: checkout libusbmsc
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbmsc
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: libusbmsc
+      - name: checkout libusbhid
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbhid
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: libusbhid
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: usbotghs
+  framac-21:
+    container:
+      image: framac/frama-c:21.1
+    steps:
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: libstd
+      - name: checkout libdfu
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libdfu
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: libdfu
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: libusbctrl
+      - name: checkout libusbmsc
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbmsc
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: libusbmsc
+      - name: checkout libusbhid
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbhid
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: libusbhid
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: usbotghs
+ 
