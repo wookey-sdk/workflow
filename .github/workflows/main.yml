@@ -43,11 +43,16 @@ jobs:
           path: build/usbotghs
       - name: Proving usbotghs
         run: |
-          cat /etc/os-release
-          cat /etc/apt/sources.list
-          apt update -y
-          apt install why3 libz3
-          wh3 config --detect
+          apt-get install -y wget unzip
+          wget https://github.com/CVC4/CVC4/releases/download/1.7/cvc4-1.7-x86_64-linux-opt
+          mv cvc4-1.7-x86_64-linux-opt /usr/bin/cvc4
+          chmod +x /usr/bin/cvc4
+          wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.6/z3-4.8.6-x64-ubuntu-16.04.zip
+          unzip z3-4.8.6-x64-ubuntu-16.04.zip
+          mv z3-4.8.6-x64-ubuntu-16.04/bin/z3 /usr/bin
+          chmod +x /usr/bin/z3
+          why3 config --detect
+          why3 --list-provers
           cd build/usbotghs;
           . ../workflow/setenv.usbotghs.sh;
           FRAMAC_TARGET=y make frama-c;
@@ -101,8 +106,6 @@ jobs:
           path: build/usbotghs
       - name: Proving libusbctrl
         run: |
-          apt install why3 libz3
-          wh3 config --detect
           cd build/libusbctrl;
           . ../workflow/setenv.libusbctrl.sh;
           FRAMAC_TARGET=y make frama-c;
