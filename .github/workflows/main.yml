@@ -5,6 +5,11 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.release }}
+      volumes:
+        - /home/runner:/home/runner
+    env:
+      HOME: /home/runner
+      PWD: /home/runner
     strategy:
       fail-fast: false
       matrix:
