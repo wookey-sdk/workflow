@@ -9,7 +9,7 @@ jobs:
         with:
           repository: wookey-sdk/libstd
           ref: master
-          repo-token:  ${{ secrets.REPO_SECRET }} 
+          token: ${{ secrets.FRAMAC_SECRET }} 
           path: libstd
       - name: Install FramaC
         run: |
