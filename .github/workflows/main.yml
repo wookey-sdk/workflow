@@ -13,6 +13,13 @@ jobs:
         release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
     timeout-minutes: 600
     steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
       - name: checkout libstd
         uses: actions/checkout@v2
         with:
@@ -45,18 +52,17 @@ jobs:
         run: |
           ls -l;
           cd build/usbotghs;
-          curl -o setenv.sh https://raw.githubusercontent.com/wookey-sdk/workflow/master/setenv.sh
-          . setenv.sh;
+          . ../workflow/setenv.sh;
           FRAMAC_TARGET=y make frama-c;
       - name: Proving usbctrl
         run: |
           cd usbctrl;
-          . ../../setenv.sh;
+          . ../workflow/setenv.sh;
           FRAMAC_TARGET=y make frama-c;
       - name: Proving dfu
         run: |
           cd libdfu;
-          . ../../setenv.sh;
+          . ../workflow/setenv.sh;
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
