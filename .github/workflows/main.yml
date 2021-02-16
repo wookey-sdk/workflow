@@ -1,9 +1,12 @@
 on: push
 
 jobs:
-  framac-22:
+  framac-build:
     container:
-      image: framac/frama-c:22.0
+      image: ${{ matrix.release }}
+    strategy:
+      matrix:
+        release: ["framac/frama-c:21.1", "framac/frama-c:22" ] 
     steps:
       - name: checkout libstd
         uses: actions/checkout@v2
@@ -47,50 +50,30 @@ jobs:
           ref: incoming
           token: ${{ secrets.framac_secret }} 
           path: usbotghs
-  framac-21:
-    container:
-      image: framac/frama-c:21.1
-    steps:
-      - name: checkout libstd
-        uses: actions/checkout@v2
+      - name: Proving usbotghs
+        run: |
+          cd usbotghs;
+          source ../setenv.sh;
+          FRAMAC_TARGET=y make frama-c;
+      - name: Proving usbctrl
+        run: |
+          cd usbctrl;
+          source ../setenv.sh;
+          FRAMAC_TARGET=y make frama-c;
+      - name: Proving usbhid
+        run: |
+          cd usbhid;
+          source ../setenv.sh;
+          FRAMAC_TARGET=y make frama-c;
+      - name: Proving usbmsc
+        run: |
+          cd usbmsc;
+          source ../setenv.sh;
+          FRAMAC_TARGET=y make frama-c;
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
         with:
-          repository: wookey-sdk/libstd
-          ref: incoming
-          token: ${{ secrets.FRAMAC_SECRET }} 
-          path: libstd
-      - name: checkout libdfu
-        uses: actions/checkout@v2
-        with:
-          repository: wookey-sdk/libdfu
-          ref: incoming
-          token: ${{ secrets.FRAMAC_SECRET }} 
-          path: libdfu
-      - name: checkout libusbctrl
-        uses: actions/checkout@v2
-        with:
-          repository: wookey-sdk/libusbctrl
-          ref: incoming
-          token: ${{ secrets.framac_secret }} 
-          path: libusbctrl
-      - name: checkout libusbmsc
-        uses: actions/checkout@v2
-        with:
-          repository: wookey-sdk/libusbmsc
-          ref: incoming
-          token: ${{ secrets.framac_secret }} 
-          path: libusbmsc
-      - name: checkout libusbhid
-        uses: actions/checkout@v2
-        with:
-          repository: wookey-sdk/libusbhid
-          ref: incoming
-          token: ${{ secrets.framac_secret }} 
-          path: libusbhid
-      - name: checkout usbotghs
-        uses: actions/checkout@v2
-        with:
-          repository: wookey-sdk/driver-stm32f4xx-usbotghs
-          ref: incoming
-          token: ${{ secrets.framac_secret }} 
-          path: usbotghs
- 
+          name: framac-results
+          path: |
+            **/framac/results/*.session
+            **/framac/results/*.log
