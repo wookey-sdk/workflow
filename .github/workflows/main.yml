@@ -1,0 +1,12 @@
+on: push
+
+jobs:
+  framac22:
+    runs-on: framac/fama-c:22.0
+    steps:
+      - uses: actions/checkout@v2
+      - with:
+          repository: wookey-sdk/libstd
+          ref: master
+          repo-token:  ${{ secrets.ACCESS_TOKEN }} 
+          path: libstd
