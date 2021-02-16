@@ -60,7 +60,7 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: framac-results
+          name: usbotghs-framac-results
           path: |
             build/usbotghs/framac/results/*.session
             build/usbotghs/framac/results/*.log
@@ -124,7 +124,7 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: framac-results
+          name: libsucbtrl-framac-results
           path: |
             build/libusbctrl/framac/results/*.session
             build/libusbctrl/framac/results/*.log
