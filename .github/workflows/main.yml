@@ -6,7 +6,7 @@ jobs:
     container:
       image: ${{ matrix.release }}
       volumes:
-        - /home/runner:/__w/workflow/workflow
+        - /home/runner:/__w/workflow/workflow/build
     strategy:
       fail-fast: false
       matrix:
@@ -19,47 +19,47 @@ jobs:
           repository: wookey-sdk/libstd
           ref: incoming
           token: ${{ secrets.FRAMAC_SECRET }} 
-          path: libstd
+          path: build/libstd
       - name: checkout libdfu
         uses: actions/checkout@v2
         with:
           repository: wookey-sdk/libdfu
           ref: incoming
           token: ${{ secrets.FRAMAC_SECRET }} 
-          path: libdfu
+          path: build/libdfu
       - name: checkout libusbctrl
         uses: actions/checkout@v2
         with:
           repository: wookey-sdk/libusbctrl
           ref: incoming
           token: ${{ secrets.framac_secret }} 
-          path: libusbctrl
+          path: build/libusbctrl
       - name: checkout usbotghs
         uses: actions/checkout@v2
         with:
           repository: wookey-sdk/driver-stm32f4xx-usbotghs
           ref: incoming
           token: ${{ secrets.framac_secret }} 
-          path: usbotghs
+          path: build/usbotghs
       - name: Proving usbotghs
         run: |
-          cd usbotghs;
-          . ../setenv.sh;
+          cd build/usbotghs;
+          . ../../setenv.sh;
           FRAMAC_TARGET=y make frama-c;
       - name: Proving usbctrl
         run: |
           cd usbctrl;
-          . ../setenv.sh;
+          . ../../setenv.sh;
           FRAMAC_TARGET=y make frama-c;
       - name: Proving dfu
         run: |
           cd libdfu;
-          . ../setenv.sh;
+          . ../../setenv.sh;
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
           name: framac-results
           path: |
-            **/framac/results/*.session
-            **/framac/results/*.log
+            build/**/framac/results/*.session
+            build/**/framac/results/*.log
