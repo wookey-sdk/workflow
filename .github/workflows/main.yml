@@ -45,8 +45,8 @@ jobs:
         continue-on-error: true
         run: |
           apt-get install -y wget unzip
-          wget -q https://github.com/CVC4/CVC4/releases/download/1.7/cvc4-1.7-x86_64-linux-opt
-          mv cvc4-1.7-x86_64-linux-opt /usr/bin/cvc4
+          if test `frama-c -version|cut -d'.' -f 1` -eq 22; then wget -q https://github.com/CVC4/CVC4/releases/download/1.7/cvc4-1.7-x86_64-linux-opt -o cvc4; else wget -q -o cvc4 https://github.com/CVC4/CVC4/releases/download/1.6/cvc4-1.6-x86_64-linux-opt; fi
+          mv cvc4 /usr/bin/cvc4
           chmod +x /usr/bin/cvc4
           wget -q https://github.com/Z3Prover/z3/releases/download/z3-4.8.6/z3-4.8.6-x64-ubuntu-16.04.zip
           unzip z3-4.8.6-x64-ubuntu-16.04.zip
@@ -109,8 +109,8 @@ jobs:
         continue-on-error: true
         run: |
           apt-get install -y wget unzip
-          wget -q https://github.com/CVC4/CVC4/releases/download/1.7/cvc4-1.7-x86_64-linux-opt
-          mv cvc4-1.7-x86_64-linux-opt /usr/bin/cvc4
+          if test `frama-c -version|cut -d'.' -f 1` -eq 22; then wget -q https://github.com/CVC4/CVC4/releases/download/1.7/cvc4-1.7-x86_64-linux-opt -o cvc4; else wget -q -o cvc4 https://github.com/CVC4/CVC4/releases/download/1.6/cvc4-1.6-x86_64-linux-opt; fi
+          mv cvc4 /usr/bin/cvc4
           chmod +x /usr/bin/cvc4
           wget -q https://github.com/Z3Prover/z3/releases/download/z3-4.8.6/z3-4.8.6-x64-ubuntu-16.04.zip
           unzip z3-4.8.6-x64-ubuntu-16.04.zip
