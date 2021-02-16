@@ -1,21 +1,22 @@
 on: push
 
 jobs:
-  framac22:
+  framac-latest:
     runs-on: ubuntu-latest
     steps:
-      - name: FramaC
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: master
+          token:  ${{ secrets.ACCESS_TOKEN }} 
+          path: libstd
+      - name: Install FramaC
         run: |
           sudo apt install opam why3;
           opam init;
           opam install depext;
           opam depext frama-c;
           opam install frama-c;
+          test -r /home/runner/.opam/opam-init/init.sh && . /home/runner/.opam/opam-init/init.sh;
           why3 config --detect
-      - name: checkout libstd
-        uses: actions/checkout@v2
-        with:
-          repository: wookey-sdk/libstd
-          ref: master
-          repo-token:  ${{ secrets.ACCESS_TOKEN }} 
-          path: libstd
