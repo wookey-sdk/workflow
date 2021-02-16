@@ -1,7 +1,7 @@
 on: push
 
 jobs:
-  framac-build:
+  usbotghs-proof:
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.release }}
@@ -27,13 +27,6 @@ jobs:
           ref: incoming
           token: ${{ secrets.FRAMAC_SECRET }} 
           path: build/libstd
-      - name: checkout libdfu
-        uses: actions/checkout@v2
-        with:
-          repository: wookey-sdk/libdfu
-          ref: incoming
-          token: ${{ secrets.FRAMAC_SECRET }} 
-          path: build/libdfu
       - name: checkout libusbctrl
         uses: actions/checkout@v2
         with:
@@ -50,24 +43,66 @@ jobs:
           path: build/usbotghs
       - name: Proving usbotghs
         run: |
-          ls -l;
           cd build/usbotghs;
-          . ../workflow/setenv.sh;
-          FRAMAC_TARGET=y make frama-c;
-      - name: Proving usbctrl
-        run: |
-          cd usbctrl;
-          . ../workflow/setenv.sh;
-          FRAMAC_TARGET=y make frama-c;
-      - name: Proving dfu
-        run: |
-          cd libdfu;
-          . ../workflow/setenv.sh;
+          . ../workflow/setenv.usbotghs.sh;
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
           name: framac-results
           path: |
-            build/**/framac/results/*.session
-            build/**/framac/results/*.log
+            build/usbotghs/framac/results/*.session
+            build/usbotghs/framac/results/*.log
+
+  usbctrl-proof:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving libusbctrl
+        run: |
+          cd build/libusbctrl;
+          . ../workflow/setenv.libusbctrl.sh;
+          FRAMAC_TARGET=y make frama-c;
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: framac-results
+          path: |
+            build/libusbctrl/framac/results/*.session
+            build/libusbctrl/framac/results/*.log
