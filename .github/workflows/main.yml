@@ -2,6 +2,7 @@ on: push
 
 jobs:
   framac-build:
+    runs-on: ubuntu-latest
     container:
       image: ${{ matrix.release }}
     strategy:
