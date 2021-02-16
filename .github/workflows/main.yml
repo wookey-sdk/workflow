@@ -30,20 +30,6 @@ jobs:
           ref: incoming
           token: ${{ secrets.framac_secret }} 
           path: libusbctrl
-      - name: checkout libusbmsc
-        uses: actions/checkout@v2
-        with:
-          repository: wookey-sdk/libusbmsc
-          ref: incoming
-          token: ${{ secrets.framac_secret }} 
-          path: libusbmsc
-      - name: checkout libusbhid
-        uses: actions/checkout@v2
-        with:
-          repository: wookey-sdk/libusbhid
-          ref: incoming
-          token: ${{ secrets.framac_secret }} 
-          path: libusbhid
       - name: checkout usbotghs
         uses: actions/checkout@v2
         with:
@@ -61,14 +47,9 @@ jobs:
           cd usbctrl;
           source ../setenv.sh;
           FRAMAC_TARGET=y make frama-c;
-      - name: Proving usbhid
+      - name: Proving dfu
         run: |
-          cd usbhid;
-          source ../setenv.sh;
-          FRAMAC_TARGET=y make frama-c;
-      - name: Proving usbmsc
-        run: |
-          cd usbmsc;
+          cd libdfu;
           source ../setenv.sh;
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
