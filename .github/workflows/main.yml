@@ -6,7 +6,7 @@ jobs:
     steps:
       - name: FramaC
         run: |
-          apt install opam why3;
+          sudo apt install opam why3;
           opam install depext;
           opam depext frama-c;
           opam install frama-c;
