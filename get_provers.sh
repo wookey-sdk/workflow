@@ -19,8 +19,8 @@ case $FRAMAC_VERSION in
         ;;
     21)
         # alt-ergo 2.3.2
-        opam init
-        opam install alt-ergo.2.3.2
+        opam init -y
+        opam install -y alt-ergo.2.3.2
         ;;
     *)
         ;;
