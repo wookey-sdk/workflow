@@ -1,0 +1,165 @@
+on: workflow_dispatch
+ 
+jobs:
+  # about libusbctrl
+  libusbctrl-parse:
+    runs-on: ubuntu-latest
+    container:
+      image: framac/frama-c:${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["21.1", "22.0"] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving libusbctrl
+        shell: bash
+        run: |
+          cd build/libusbctrl;
+          sh ../workflow/get_provers.sh
+          . ../workflow/setenv.libusbctrl.sh;
+          mkdir -p framac/results;
+          FRAMAC_TARGET=y make frama-c-parsing;
+  libusbctrl-eva:
+    needs: libusbctrl-parse
+    runs-on: ubuntu-latest
+    container:
+      image: framac/frama-c:${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["21.1", "22.0"] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving libusbctrl
+        shell: bash
+        run: |
+          cd build/libusbctrl;
+          . ../workflow/setenv.libusbctrl.sh;
+          mkdir -p framac/results;
+          FRAMAC_TARGET=y make frama-c-eva;
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: libusbctrl-framac-eva-${{ matrix.release }}
+          path: |
+            build/libusbctrl/framac/results/*.session
+            build/libusbctrl/framac/results/*.log
+  libusbctrl-wp:
+    needs: [libusbctrl-parse, libusbctrl-eva]
+    runs-on: ubuntu-latest
+    container:
+      image: framac/frama-c:${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["21.1", "22.0"] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving libusbctrl
+        shell: bash
+        run: |
+          cd build/libusbctrl;
+          sh ../workflow/get_provers.sh
+          . ../workflow/setenv.libusbctrl.sh;
+          mkdir -p framac/results;
+          FRAMAC_TARGET=y make frama-c;
+      - name: Archive production artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: libusbctrl-framac-wp-${{ matrix.release }}
+          path: |
+            build/libusbctrl/framac/results/*.session
+            build/libusbctrl/framac/results/*.log

@@ -1,0 +1,185 @@
+on: [push,workflow_dispatch ]
+ 
+jobs:
+  # about libdfu
+  libdfu-parse:
+    runs-on: ubuntu-latest
+    container:
+      image: framac/frama-c:${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["21.1", "22.0"] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout libdfu
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libdfu
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libdfu
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving libdfu
+        shell: bash
+        run: |
+          cd build/libdfu;
+          . ../workflow/setenv.libdfu.sh;
+          mkdir -p framac/results;
+          FRAMAC_TARGET=y make frama-c-parsing;
+  libdfu-eva:
+    needs: libdfu-parse
+    runs-on: ubuntu-latest
+    container:
+      image: framac/frama-c:${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["21.1", "22.0"] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout libdfu
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libdfu
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libdfu
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving libdfu
+        shell: bash
+        run: |
+          cd build/libdfu;
+          . ../workflow/setenv.libdfu.sh;
+          mkdir -p framac/results;
+          FRAMAC_TARGET=y make frama-c-eva;
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: libdfu-framac-eva-${{ matrix.release }}
+          path: |
+            build/libdfu/framac/results/*.session
+            build/libdfu/framac/results/*.log
+  libdfu-wp:
+    needs: [libdfu-parse, libdfu-eva]
+    runs-on: ubuntu-latest
+    container:
+      image: framac/frama-c:${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["21.1", "22.0"] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout libdfu
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libdfu
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libdfu
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving libdfu
+        shell: bash
+        run: |
+          cd build/libdfu;
+          sh ../workflow/get_provers.sh
+          . ../workflow/setenv.libdfu.sh;
+          mkdir -p framac/results;
+          FRAMAC_TARGET=y make frama-c;
+      - name: Archive production artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: libdfu-framac-wp-${{ matrix.release }}
+          path: |
+            build/libdfu/framac/results/*.session
+            build/libdfu/framac/results/*.log

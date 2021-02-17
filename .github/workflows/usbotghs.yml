@@ -1,0 +1,164 @@
+on: workflow_dispatch
+ 
+jobs:
+  # about usbotghs driver
+  usbotghs-parse:
+    runs-on: ubuntu-latest
+    container:
+      image: framac/frama-c:${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["21.1", "22.0"] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving usbotghs
+        shell: bash
+        run: |
+          cd build/usbotghs;
+          . ../workflow/setenv.usbotghs.sh;
+          mkdir -p framac/results;
+          FRAMAC_TARGET=y make frama-c-parsing;
+  usbotghs-eva:
+    needs: usbotghs-parse
+    runs-on: ubuntu-latest
+    container:
+      image: framac/frama-c:${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["21.1", "22.0"] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving usbotghs
+        shell: bash
+        run: |
+          cd build/usbotghs;
+          . ../workflow/setenv.usbotghs.sh;
+          mkdir -p framac/results;
+          FRAMAC_TARGET=y make frama-c-eva;
+      - name: Archive production artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: usbotghs-framac-eva-${{ matrix.release }}
+          path: |
+            build/usbotghs/framac/results/*.session
+            build/usbotghs/framac/results/*.log
+  usbotghs-wp:
+    needs: [usbotghs-parse, usbotghs-eva]
+    runs-on: ubuntu-latest
+    container:
+      image: framac/frama-c:${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["21.1", "22.0"] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving usbotghs
+        shell: bash
+        run: |
+          cd build/usbotghs;
+          sh ../workflow/get_provers.sh
+          . ../workflow/setenv.usbotghs.sh;
+          mkdir -p framac/results;
+          FRAMAC_TARGET=y make frama-c;
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: usbotghs-framac-wp-${{ matrix.release }}
+          path: |
+            build/usbotghs/framac/results/*.session
+            build/usbotghs/framac/results/*.log
