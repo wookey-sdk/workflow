@@ -2,9 +2,18 @@
 
 # as executed with --noprofile in CI, we load back profiles to get back correct env for provers
 if test ! -z "$CI"; then
-  . /etc/profile
-  . ~/.profile
-  . ~/.bashrc
+    if test -e /etc/profile; then
+        . /etc/profile
+    fi;
+    if test -e /etc/bash.bashrc; then
+        . /etc/bash.bashrc
+    fi;
+    if test -e ~/profile; then
+        . ~/.profile
+    fi;
+    if test -e ~/.bashrc; then
+        . ~/.bashrc
+    fi;
 fi
 
 # get back requirements
