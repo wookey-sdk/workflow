@@ -49,6 +49,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.usbotghs.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-parsing;
   usbotghs-eva:
     needs: usbotghs-parse
@@ -98,6 +99,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.usbotghs.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-eva;
       - name: Archive production artifacts
         if: ${{ always() }}
@@ -155,6 +157,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.usbotghs.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
@@ -212,6 +215,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libusbctrl.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-parsing;
   libusbctrl-eva:
     needs: libusbctrl-parse
@@ -261,6 +265,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libusbctrl.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-eva;
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
@@ -318,6 +323,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libusbctrl.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
         if: ${{ always() }}
@@ -382,6 +388,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libdfu.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-parsing;
   libdfu-eva:
     needs: libdfu-parse
@@ -438,6 +445,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libdfu.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-eva;
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
@@ -502,6 +510,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libdfu.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
         if: ${{ always() }}
@@ -566,6 +575,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libusbmsc.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-parsing;
   libusbmsc-eva:
     needs: libusbmsc-parse
@@ -622,6 +632,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libusbmsc.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-eva;
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
@@ -686,6 +697,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libusbmsc.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
         if: ${{ always() }}
@@ -750,6 +762,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libusbhid.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-parsing;
   libusbhid-eva:
     needs: libusbhid-parse
@@ -806,6 +819,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libusbhid.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-eva;
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
@@ -870,6 +884,7 @@ jobs:
           why3 config --detect
           why3 --list-provers
           . ../workflow/setenv.libusbhid.sh;
+          mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
         if: ${{ always() }}
