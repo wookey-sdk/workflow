@@ -1,8 +1,5 @@
 on: [push,workflow_dispatch ]
-on: 
-  schedule:
-    - cron: '0 22 * * *'
-  
+ 
 jobs:
   # about usbotghs driver
   usbotghs-parse:
