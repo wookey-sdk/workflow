@@ -11,7 +11,7 @@ export LIBSTD_API_DIR=../libstd/api
 export EWOK_API_DIR=../libstd/framac/includes/ewok
 case $FRAMAC_VERSION in
     22)
-        export FRAMAC_WP_PROVERS=alt-ergo,z3
+        export FRAMAC_WP_PROVERS=cvc4,z3
         ;;
     21)
         export FRAMAC_WP_PROVERS=alt-ergo,z3
