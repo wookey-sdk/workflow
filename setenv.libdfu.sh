@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 FRAMAC_VERSION=`frama-c -version|cut -d'.' -f 1`;
 

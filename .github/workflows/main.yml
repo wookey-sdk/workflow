@@ -43,6 +43,7 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving usbotghs
+        shell: bash
         run: |
           cd build/usbotghs;
           . ../workflow/setenv.usbotghs.sh;
@@ -90,6 +91,7 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving usbotghs
+        shell: bash
         run: |
           cd build/usbotghs;
           . ../workflow/setenv.usbotghs.sh;
@@ -145,11 +147,10 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving usbotghs
+        shell: bash
         run: |
           cd build/usbotghs;
           sh ../workflow/get_provers.sh
-          why3 config --detect
-          why3 --list-provers
           . ../workflow/setenv.usbotghs.sh;
           mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;
@@ -203,11 +204,10 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libusbctrl
+        shell: bash
         run: |
           cd build/libusbctrl;
           sh ../workflow/get_provers.sh
-          why3 config --detect
-          why3 --list-provers
           . ../workflow/setenv.libusbctrl.sh;
           mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-parsing;
@@ -253,6 +253,7 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libusbctrl
+        shell: bash
         run: |
           cd build/libusbctrl;
           . ../workflow/setenv.libusbctrl.sh;
@@ -308,11 +309,10 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libusbctrl
+        shell: bash
         run: |
           cd build/libusbctrl;
           sh ../workflow/get_provers.sh
-          why3 config --detect
-          why3 --list-provers
           . ../workflow/setenv.libusbctrl.sh;
           mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;
@@ -373,6 +373,7 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libdfu
+        shell: bash
         run: |
           cd build/libdfu;
           . ../workflow/setenv.libdfu.sh;
@@ -427,6 +428,7 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libdfu
+        shell: bash
         run: |
           cd build/libdfu;
           . ../workflow/setenv.libdfu.sh;
@@ -489,11 +491,10 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libdfu
+        shell: bash
         run: |
           cd build/libdfu;
           sh ../workflow/get_provers.sh
-          why3 config --detect
-          why3 --list-provers
           . ../workflow/setenv.libdfu.sh;
           mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;
@@ -554,6 +555,7 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libusbmsc
+        shell: bash
         run: |
           cd build/libusbmsc;
           . ../workflow/setenv.libusbmsc.sh;
@@ -608,6 +610,7 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libusbmsc
+        shell: bash
         run: |
           cd build/libusbmsc;
           . ../workflow/setenv.libusbmsc.sh;
@@ -670,11 +673,10 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libusbmsc
+        shell: bash
         run: |
           cd build/libusbmsc;
           sh ../workflow/get_provers.sh
-          why3 config --detect
-          why3 --list-provers
           . ../workflow/setenv.libusbmsc.sh;
           mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;
@@ -735,6 +737,7 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libusbhid
+        shell: bash
         run: |
           cd build/libusbhid;
           . ../workflow/setenv.libusbhid.sh;
@@ -789,6 +792,7 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libusbhid
+        shell: bash
         run: |
           cd build/libusbhid;
           . ../workflow/setenv.libusbhid.sh;
@@ -851,11 +855,10 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libusbhid
+        shell: bash
         run: |
           cd build/libusbhid;
           sh ../workflow/get_provers.sh
-          why3 config --detect
-          why3 --list-provers
           . ../workflow/setenv.libusbhid.sh;
           mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;

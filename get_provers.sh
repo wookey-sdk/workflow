@@ -1,5 +1,12 @@
 #!/usr/bin/env sh
 
+# as executed with --noprofile in CI, we load back profiles to get back correct env for provers
+if test ! -z "$CI"; then
+  . /etc/profile
+  . ~/.profile
+  . ~/.bashrc
+fi
+
 # get back requirements
 apt-get install -y wget unzip
 
@@ -16,11 +23,10 @@ case $FRAMAC_VERSION in
         unzip z3-4.8.6-x64-ubuntu-16.04.zip
         mv z3-4.8.6-x64-ubuntu-16.04/bin/z3 /usr/bin
         chmod +x /usr/bin/z3
+        why3 config --detect
+        why3 --list-provers
         ;;
     21)
-        # alt-ergo 2.3.2
-        opam init -y
-        opam install -y alt-ergo.2.3.2
         ;;
     *)
         ;;

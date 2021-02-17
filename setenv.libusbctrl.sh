@@ -1,8 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 FRAMAC_VERSION=`frama-c -version|cut -d'.' -f 1`;
-
-eval $(opam env)
 
 echo "=== sourcing requested paths for Frama-C makefile"
 
@@ -16,7 +14,7 @@ case $FRAMAC_VERSION in
         export FRAMAC_WP_PROVERS=alt-ergo,z3
         ;;
     21)
-        export FRAMAC_WP_PROVERS=alt-ergo
+        export FRAMAC_WP_PROVERS=alt-ergo,z3,cvc4
         ;;
     *)
         export FRAMAC_WP_PROVERS=alt-ergo
