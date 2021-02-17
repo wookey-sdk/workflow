@@ -205,6 +205,9 @@ jobs:
       - name: Proving libusbctrl
         run: |
           cd build/libusbctrl;
+          sh ../workflow/get_provers.sh
+          why3 config --detect
+          why3 --list-provers
           . ../workflow/setenv.libusbctrl.sh;
           mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c-parsing;

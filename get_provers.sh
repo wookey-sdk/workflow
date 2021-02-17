@@ -18,10 +18,9 @@ case $FRAMAC_VERSION in
         chmod +x /usr/bin/z3
         ;;
     21)
-        # alt-ergo 2.0.0 & z3 4.4.1 (buster base)
-        cat /etc/debian_version
-        apt update
-        apt install -y alt-ergo z3
+        # alt-ergo 2.3.2
+        eval $(opam env)
+        opam install alt-ergo.2.3.2
         ;;
     *)
         ;;
