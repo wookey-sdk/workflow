@@ -150,7 +150,7 @@ jobs:
         shell: bash
         run: |
           cd build/usbotghs;
-          sh ../workflow/get_provers.sh
+          bash ../workflow/get_provers.sh
           . ../workflow/setenv.usbotghs.sh;
           mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;

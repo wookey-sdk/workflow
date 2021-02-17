@@ -171,7 +171,7 @@ jobs:
         shell: bash
         run: |
           cd build/libusbmsc;
-          sh ../workflow/get_provers.sh
+          bash ../workflow/get_provers.sh
           . ../workflow/setenv.libusbmsc.sh;
           mkdir -p framac/results;
           FRAMAC_TARGET=y make frama-c;
