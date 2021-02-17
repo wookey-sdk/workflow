@@ -5,7 +5,6 @@ apt-get install -y wget unzip
 
 FRAMAC_VERSION=`frama-c -version|cut -d'.' -f 1`;
 
-if test  -eq 22; then
 case $FRAMAC_VERSION in
     22)
         # cvc4
