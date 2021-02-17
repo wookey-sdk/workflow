@@ -7,8 +7,6 @@ FRAMAC_VERSION=`frama-c -version|cut -d'.' -f 1`;
 
 case $FRAMAC_VERSION in
     22)
-
-         why3 config --full-config
         # cvc4
         wget -q -o cvc4 https://github.com/CVC4/CVC4/releases/download/1.7/cvc4-1.7-x86_64-linux-opt; 
         mv cvc4 /usr/bin/cvc4;
