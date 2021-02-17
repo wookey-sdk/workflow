@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # as executed with --noprofile in CI, we load back profiles to get back correct env for provers
 if test ! -z "$CI"; then
