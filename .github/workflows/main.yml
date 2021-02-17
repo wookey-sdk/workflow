@@ -1,16 +1,17 @@
 on: push
 
 jobs:
+  # about usbotghs driver
   usbotghs-parse:
     runs-on: ubuntu-latest
     container:
-      image: ${{ matrix.release }}
+      image: framac/frama-c:${{ matrix.release }}
       volumes:
         - /home/runner:/__w/workflow/workflow/build
     strategy:
       fail-fast: false
       matrix:
-        release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
+        release: [21.1, 22.0] 
     timeout-minutes: 600
     steps:
       - name: checkout workflow
@@ -50,18 +51,17 @@ jobs:
           why3 --list-provers
           . ../workflow/setenv.usbotghs.sh;
           FRAMAC_TARGET=y make frama-c-parsing;
-
   usbotghs-eva:
     needs: usbotghs-parse
     runs-on: ubuntu-latest
     container:
-      image: ${{ matrix.release }}
+      image: framac/frama-c:${{ matrix.release }}
       volumes:
         - /home/runner:/__w/workflow/workflow/build
     strategy:
       fail-fast: false
       matrix:
-        release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
+        release: [21.1, 22.0] 
     timeout-minutes: 600
     steps:
       - name: checkout workflow
@@ -93,7 +93,6 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving usbotghs
-        continue-on-error: true
         run: |
           cd build/usbotghs;
           sh ../workflow/get_provers.sh
@@ -102,9 +101,10 @@ jobs:
           . ../workflow/setenv.usbotghs.sh;
           FRAMAC_TARGET=y make frama-c-eva;
       - name: Archive production artifacts
+        if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
-          name: usbotghs-framac-eva
+          name: usbotghs-framac-eva-${{ matrix.release }}
           path: |
             build/usbotghs/framac/results/*.session
             build/usbotghs/framac/results/*.log
@@ -112,13 +112,13 @@ jobs:
     needs: [usbotghs-parse, usbotghs-eva]
     runs-on: ubuntu-latest
     container:
-      image: ${{ matrix.release }}
+      image: framac/frama-c:${{ matrix.release }}
       volumes:
         - /home/runner:/__w/workflow/workflow/build
     strategy:
       fail-fast: false
       matrix:
-        release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
+        release: [21.1, 22.0] 
     timeout-minutes: 600
     steps:
       - name: checkout workflow
@@ -150,7 +150,6 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving usbotghs
-        continue-on-error: true
         run: |
           cd build/usbotghs;
           sh ../workflow/get_provers.sh
@@ -160,22 +159,23 @@ jobs:
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
+        if: ${{ always() }}
         with:
-          name: usbotghs-framac-wp
+          name: usbotghs-framac-wp-${{ matrix.release }}
           path: |
             build/usbotghs/framac/results/*.session
             build/usbotghs/framac/results/*.log
-
+  # about libusbctrl
   libusbctrl-parse:
     runs-on: ubuntu-latest
     container:
-      image: ${{ matrix.release }}
+      image: framac/frama-c:${{ matrix.release }}
       volumes:
         - /home/runner:/__w/workflow/workflow/build
     strategy:
       fail-fast: false
       matrix:
-        release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
+        release: [21.1, 22.0] 
     timeout-minutes: 600
     steps:
       - name: checkout workflow
@@ -220,13 +220,13 @@ jobs:
     needs: libusbctrl-parse
     runs-on: ubuntu-latest
     container:
-      image: ${{ matrix.release }}
+      image: framac/frama-c:${{ matrix.release }}
       volumes:
         - /home/runner:/__w/workflow/workflow/build
     strategy:
       fail-fast: false
       matrix:
-        release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
+        release: [21.1, 22.0] 
     timeout-minutes: 600
     steps:
       - name: checkout workflow
@@ -258,7 +258,6 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving usbotghs
-        continue-on-error: true
         run: |
           cd build/libusbctrl;
           sh ../workflow/get_provers.sh
@@ -268,8 +267,9 @@ jobs:
           FRAMAC_TARGET=y make frama-c-eva;
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
+        if: ${{ always() }}
         with:
-          name: libusbctrl-framac-eva
+          name: libusbctrl-framac-eva-${{ matrix.release }}
           path: |
             build/libusbctrl/framac/results/*.session
             build/libusbctrl/framac/results/*.log
@@ -277,13 +277,13 @@ jobs:
     needs: [libusbctrl-parse, libusbctrl-eva]
     runs-on: ubuntu-latest
     container:
-      image: ${{ matrix.release }}
+      image: framac/frama-c:${{ matrix.release }}
       volumes:
         - /home/runner:/__w/workflow/workflow/build
     strategy:
       fail-fast: false
       matrix:
-        release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
+        release: [21.1, 22.0] 
     timeout-minutes: 600
     steps:
       - name: checkout workflow
@@ -315,7 +315,6 @@ jobs:
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
       - name: Proving libusbctrl
-        continue-on-error: true
         run: |
           cd build/libusbctrl;
           sh ../workflow/get_provers.sh
@@ -324,9 +323,11 @@ jobs:
           . ../workflow/setenv.libusbctrl.sh;
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
+        if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
-          name: libusbctrl-framac-wp
+          name: libusbctrl-framac-wp-${{ matrix.release }}
           path: |
             build/libusbctrl/framac/results/*.session
             build/libusbctrl/framac/results/*.log
+  # about libusbctrl
