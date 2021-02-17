@@ -20,7 +20,7 @@ case $FRAMAC_VERSION in
         ;;
     21)
         # alt-ergo 2.0.0 & z3 4.4.1 (buster base)
-        apt install alt-ergo z3
+        apt install -y alt-ergo z3
         ;;
     *)
         ;;
