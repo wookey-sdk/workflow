@@ -19,11 +19,8 @@ case $FRAMAC_VERSION in
         chmod +x /usr/bin/z3
         ;;
     21)
-        # z3
-        wget -q https://github.com/Z3Prover/z3/releases/download/z3-4.8.3/z3-4.8.3.7f5d66c3c299-x64-ubuntu-16.04.zip;
-        unzip z3-4.8.3.7f5d66c3c299-x64-ubuntu-16.04.zip;
-        mv z3-4.8.3.7f5d66c3c299-x64-ubuntu-16.04/bin/z3 /usr/bin
-        chmod +x /usr/bin/z3
+        # alt-ergo 2.0.0 & z3 4.4.1 (buster base)
+        apt install alt-ergo z3
         ;;
     *)
         ;;

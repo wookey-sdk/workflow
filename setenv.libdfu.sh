@@ -15,7 +15,7 @@ case $FRAMAC_VERSION in
         export FRAMAC_WP_PROVERS=alt-ergo,z3
         ;;
     21)
-        export FRAMAC_WP_PROVERS=alt-ergo
+        export FRAMAC_WP_PROVERS=alt-ergo,z3
         ;;
     *)
         export FRAMAC_WP_PROVERS=alt-ergo
