@@ -1,7 +1,7 @@
 on: push
 
 jobs:
-  usbotghs-proof:
+  usbotghs-parse:
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.release }}
@@ -44,28 +44,17 @@ jobs:
       - name: Proving usbotghs
         continue-on-error: true
         run: |
-          apt-get install -y wget unzip
-          if test `frama-c -version|cut -d'.' -f 1` -eq 22; then wget -q https://github.com/CVC4/CVC4/releases/download/1.7/cvc4-1.7-x86_64-linux-opt -o cvc4; else wget -q -o cvc4 https://github.com/CVC4/CVC4/releases/download/1.6/cvc4-1.6-x86_64-linux-opt; fi
-          mv cvc4 /usr/bin/cvc4
-          chmod +x /usr/bin/cvc4
-          wget -q https://github.com/Z3Prover/z3/releases/download/z3-4.8.6/z3-4.8.6-x64-ubuntu-16.04.zip
-          unzip z3-4.8.6-x64-ubuntu-16.04.zip
-          mv z3-4.8.6-x64-ubuntu-16.04/bin/z3 /usr/bin
-          chmod +x /usr/bin/z3
+          cd build/usbotghs;
+          sh ../workflow/get_provers.sh
           why3 config --detect
           why3 --list-provers
-          cd build/usbotghs;
           . ../workflow/setenv.usbotghs.sh;
-          FRAMAC_TARGET=y make frama-c;
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: usbotghs-framac-results
-          path: |
-            build/usbotghs/framac/results/*.session
-            build/usbotghs/framac/results/*.log
+          FRAMAC_TARGET=y make frama-c-parsing;
 
-  usbctrl-proof:
+
+jobs:
+  usbotghs-eva:
+    needs: usbotghs-parse
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.release }}
@@ -105,26 +94,80 @@ jobs:
           ref: incoming
           token: ${{ secrets.framac_secret }} 
           path: build/usbotghs
-      - name: Proving libusbctrl
+      - name: Proving usbotghs
         continue-on-error: true
         run: |
-          apt-get install -y wget unzip
-          if test `frama-c -version|cut -d'.' -f 1` -eq 22; then wget -q https://github.com/CVC4/CVC4/releases/download/1.7/cvc4-1.7-x86_64-linux-opt -o cvc4; else wget -q -o cvc4 https://github.com/CVC4/CVC4/releases/download/1.6/cvc4-1.6-x86_64-linux-opt; fi
-          mv cvc4 /usr/bin/cvc4
-          chmod +x /usr/bin/cvc4
-          wget -q https://github.com/Z3Prover/z3/releases/download/z3-4.8.6/z3-4.8.6-x64-ubuntu-16.04.zip
-          unzip z3-4.8.6-x64-ubuntu-16.04.zip
-          mv z3-4.8.6-x64-ubuntu-16.04/bin/z3 /usr/bin
-          chmod +x /usr/bin/z3
+          cd build/usbotghs;
+          sh ../workflow/get_provers.sh
           why3 config --detect
           why3 --list-provers
-          cd build/libusbctrl;
-          . ../workflow/setenv.libusbctrl.sh;
+          . ../workflow/setenv.usbotghs.sh;
+          FRAMAC_TARGET=y make frama-c-eva;
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: usbotghs-framac-eva
+          path: |
+            build/usbotghs/framac/results/*.session
+            build/usbotghs/framac/results/*.log
+
+jobs:
+  usbotghs-wp:
+    needs: [usbotghs-parse, usbotghs-eva]
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving usbotghs
+        continue-on-error: true
+        run: |
+          cd build/usbotghs;
+          sh ../workflow/get_provers.sh
+          why3 config --detect
+          why3 --list-provers
+          . ../workflow/setenv.usbotghs.sh;
           FRAMAC_TARGET=y make frama-c;
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: libsucbtrl-framac-results
+          name: usbotghs-framac-wp
           path: |
-            build/libusbctrl/framac/results/*.session
-            build/libusbctrl/framac/results/*.log
+            build/usbotghs/framac/results/*.session
+            build/usbotghs/framac/results/*.log
+
+

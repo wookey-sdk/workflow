@@ -1,0 +1,59 @@
+on: push
+
+jobs:
+  usbctrl-proof:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.release }}
+      volumes:
+        - /home/runner:/__w/workflow/workflow/build
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ["framac/frama-c:21.1", "framac/frama-c:22.0" ] 
+    timeout-minutes: 600
+    steps:
+      - name: checkout workflow
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/workflow
+          ref: master
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/workflow
+      - name: checkout libstd
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libstd
+          ref: incoming
+          token: ${{ secrets.FRAMAC_SECRET }} 
+          path: build/libstd
+      - name: checkout libusbctrl
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/libusbctrl
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/libusbctrl
+      - name: checkout usbotghs
+        uses: actions/checkout@v2
+        with:
+          repository: wookey-sdk/driver-stm32f4xx-usbotghs
+          ref: incoming
+          token: ${{ secrets.framac_secret }} 
+          path: build/usbotghs
+      - name: Proving libusbctrl
+        continue-on-error: true
+        run: |
+          cd build/libusbctrl;
+          sh ../workflow/get_provers.sh
+          why3 config --detect
+          why3 --list-provers
+          . ../workflow/setenv.libusbctrl.sh;
+          FRAMAC_TARGET=y make frama-c;
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: libsucbtrl-framac-results
+          path: |
+            build/libusbctrl/framac/results/*.session
+            build/libusbctrl/framac/results/*.log
