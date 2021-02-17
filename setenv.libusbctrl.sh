@@ -2,6 +2,8 @@
 
 FRAMAC_VERSION=`frama-c -version|cut -d'.' -f 1`;
 
+eval $(opam env)
+
 echo "=== sourcing requested paths for Frama-C makefile"
 
 set -x
